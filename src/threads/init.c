@@ -134,6 +134,50 @@ pintos_init (void)
     run_actions (argv);
   } else {
     // TODO: no command line passed to kernel. Run interactively 
+    size_t command_max_length = 20;
+    size_t command_now_pos = 0;
+    char *command_str = (char *) malloc((command_max_length + 1) * sizeof(char));
+    while (true) {
+      printf("PKUOS>");
+      command_now_pos = 0;
+      while(true) {
+        char key = input_getc();
+        if (key == 127) {
+          if (command_now_pos > 0) {
+            --command_now_pos;
+            // Use \b and space to cheat terminal.
+            // First \b make pointer move backward and space cover the 
+            // charactor before.
+            // Second \b make pointer move backward and need a charactor 
+            // used to cover space in the future.
+            printf("\b \b");
+          }
+        } else if (key == 13) { 
+          // Input an enter
+          printf("\n");
+          command_str[command_now_pos] = '\0';
+          break;
+        } else {
+          if (command_now_pos == command_max_length - 1) {
+            continue;
+          } else {
+            command_str[command_now_pos] = key;
+            command_now_pos ++;
+            printf("%c", key);
+          }
+        }
+      }
+      if (strcmp(command_str, "exit") == 0) {
+        break;
+      } else if (strcmp(command_str, "whoami") == 0) {
+        printf("Lrefrain\n2211314668\n");
+      } else {
+        printf("invalid command\n");
+      }
+    }
+
+    free(command_str);
+
   }
 
   /* Finish up. */
